@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Relatorio Instagram — @luizatlimma</title>
+<style>
+  * { box-sizing:border-box; margin:0; padding:0 }
+  body { font-family:'Segoe UI',Arial,sans-serif; background:#F0F2F5; color:#333 }
+  a { color:inherit; text-decoration:none }
+
+  /* Header */
+  .header { background:linear-gradient(135deg,#1A1A2E 0%,#16213E 60%,#0F3460 100%);
+             padding:32px 40px; color:white }
+  .header-top { display:flex; align-items:center; gap:16px; margin-bottom:8px }
+  .ig-icon { width:48px;height:48px;background:#E1306C;border-radius:12px;
+              display:flex;align-items:center;justify-content:center;
+              font-size:24px;font-weight:900;color:white }
+  .header h1 { font-size:26px; font-weight:800 }
+  .header h1 span { color:#E1306C }
+  .header-sub { color:#aaa; font-size:13px; margin-top:4px }
+  .header-meta { display:flex; gap:24px; margin-top:16px }
+  .meta-item { font-size:12px; color:#888 }
+  .meta-item strong { color:white; font-size:14px; display:block }
+
+  /* Layout */
+  .container { max-width:1100px; margin:0 auto; padding:28px 20px }
+  .section { background:white; border-radius:12px; padding:24px;
+              margin-bottom:20px; box-shadow:0 2px 8px rgba(0,0,0,.06) }
+  .section-title { font-size:16px; font-weight:700; margin-bottom:16px;
+                    color:#1A1A2E; display:flex; align-items:center; gap:8px }
+  .section-title::before { content:''; display:block; width:4px; height:18px;
+                             background:#E1306C; border-radius:2px }
+
+  /* Cards */
+  .cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:12px }
+  .card { background:#F8F9FA; border-radius:10px; padding:16px 12px; text-align:center;
+           position:relative; overflow:hidden }
+  .card-bar { position:absolute; top:0; left:0; right:0; height:3px }
+  .card-value { font-size:22px; font-weight:800; margin-top:6px }
+  .card-title { font-size:11px; color:#888; margin-top:4px }
+
+  /* Engajamento badge */
+  .eng-badge { display:inline-block; padding:4px 14px; border-radius:20px; font-size:13px;
+                font-weight:700; color:white; background:#F39C12; margin-left:10px }
+
+  /* Barras */
+  .tipo-row,.dia-row { display:flex; align-items:center; gap:10px;
+                        padding:8px 0; border-bottom:1px solid #f0f0f0 }
+  .tipo-nome,.dia-nome { width:130px; font-size:12px; flex-shrink:0 }
+  .tipo-bar-wrap { flex:1; background:#f0f0f0; border-radius:4px; height:8px; overflow:hidden }
+  .tipo-bar { height:100%; border-radius:4px; transition:width .3s }
+  .tipo-valor { width:55px; text-align:right; font-size:12px; font-weight:700; flex-shrink:0 }
+  .tipo-posts { width:60px; text-align:right; font-size:11px; color:#888; flex-shrink:0 }
+
+  /* Tabela top posts */
+  table { width:100%; border-collapse:collapse; font-size:13px }
+  th { background:#1A1A2E; color:white; padding:10px 12px; text-align:left; font-weight:600 }
+  td { padding:10px 12px; border-bottom:1px solid #f0f0f0 }
+  tr:last-child td { border-bottom:none }
+  tr:hover td { background:#fafafa }
+  .pos { font-weight:800; color:#E1306C; width:30px }
+  .tag { background:#f0f0f0; padding:3px 8px; border-radius:12px; font-size:11px }
+  .link { color:#E1306C; font-weight:600 }
+  .link:hover { text-decoration:underline }
+
+  /* Recomendacoes */
+  .rec-card { background:#F8F9FA; border-radius:10px; padding:16px;
+               margin-bottom:12px; border-left:4px solid #eee }
+  .rec-header { display:flex; align-items:center; gap:10px; margin-bottom:8px }
+  .rec-badge { padding:3px 10px; border-radius:12px; font-size:10px;
+                font-weight:800; color:white }
+  .rec-cat { font-size:14px; font-weight:700 }
+  .rec-situacao { font-size:12px; color:#666; margin-bottom:8px; line-height:1.5 }
+  .rec-acoes { padding-left:16px; font-size:12px; color:#444; line-height:1.8 }
+
+  /* Hashtags */
+  .hashtag { display:inline-block; background:#F0E6FF; color:#833AB4;
+              padding:4px 10px; border-radius:14px; font-size:12px;
+              font-weight:600; margin:3px }
+
+  /* Bio */
+  .bio-box { background:#F8F9FA; border-radius:10px; padding:16px }
+  .bio-texto { font-size:14px; font-style:italic; color:#444; margin-bottom:12px;
+                line-height:1.6; border-left:3px solid #E1306C; padding-left:12px }
+  .bio-status { display:flex; flex-wrap:wrap; gap:12px; margin-bottom:10px }
+  .bio-item { font-size:12px; background:white; padding:4px 10px; border-radius:8px;
+               box-shadow:0 1px 3px rgba(0,0,0,.08) }
+  .bio-prob { font-size:12px; color:#E67E22; background:#FFF8F0;
+               padding:6px 10px; border-radius:6px; margin-top:4px }
+
+  /* Grid 2 colunas */
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:20px }
+
+  /* Footer */
+  .footer { text-align:center; padding:24px; color:#aaa; font-size:12px }
+
+  @media(max-width:700px) {
+    .header { padding:20px } .cards { grid-template-columns:repeat(2,1fr) }
+    .grid2 { grid-template-columns:1fr }
+    .header-meta { flex-wrap:wrap; gap:12px }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="ig-icon">@</div>
+    <div>
+      <h1>@<span>luizatlimma</span></h1>
+      <div class="header-sub">Luiza Limma | Trans Model &nbsp;·&nbsp; Relatorio gerado em 06/04/2026</div>
+    </div>
+    <div style="margin-left:auto">
+      <span class="eng-badge">Bom</span>
+    </div>
+  </div>
+  <div class="header-meta">
+    <div class="meta-item"><strong>1,148</strong>Seguidores</div>
+    <div class="meta-item"><strong style="color:#F39C12">5.75%</strong>Engajamento</div>
+    <div class="meta-item"><strong>NANO</strong>Categoria</div>
+    <div class="meta-item"><strong>5.0%</strong>Benchmark</div>
+    <div class="meta-item"><strong>52</strong>Posts Analisados</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Cards -->
+  <div class="section">
+    <div class="section-title">Metricas Principais</div>
+    <div class="cards">
+        <div class="card">
+          <div class="card-bar" style="background:#E1306C"></div>
+          <div class="card-value" style="color:#E1306C">1,148</div>
+          <div class="card-title">Seguidores</div>
+        </div>
+        <div class="card">
+          <div class="card-bar" style="background:#F39C12"></div>
+          <div class="card-value" style="color:#F39C12">5.75%</div>
+          <div class="card-title">Engajamento</div>
+        </div>
+        <div class="card">
+          <div class="card-bar" style="background:#F77737"></div>
+          <div class="card-value" style="color:#F77737">61</div>
+          <div class="card-title">Curtidas Medias</div>
+        </div>
+        <div class="card">
+          <div class="card-bar" style="background:#833AB4"></div>
+          <div class="card-value" style="color:#833AB4">5</div>
+          <div class="card-title">Comentarios Med.</div>
+        </div>
+        <div class="card">
+          <div class="card-bar" style="background:#3498DB"></div>
+          <div class="card-value" style="color:#3498DB">Sabado</div>
+          <div class="card-title">Melhor Dia</div>
+        </div>
+        <div class="card">
+          <div class="card-bar" style="background:#1ABC9C"></div>
+          <div class="card-value" style="color:#1ABC9C">1h</div>
+          <div class="card-title">Melhor Hora</div>
+        </div>
+        <div class="card">
+          <div class="card-bar" style="background:#E67E22"></div>
+          <div class="card-value" style="color:#E67E22">0.3x</div>
+          <div class="card-title">Posts/Semana</div>
+        </div>
+        <div class="card">
+          <div class="card-bar" style="background:#9B59B6"></div>
+          <div class="card-value" style="color:#9B59B6">Carrosseis</div>
+          <div class="card-title">Formato Ideal</div>
+        </div></div>
+  </div>
+
+  <!-- Graficos textuais -->
+  <div class="grid2">
+    <div class="section">
+      <div class="section-title">Engajamento por Formato</div>
+      
+        <div class="tipo-row">
+          <div class="tipo-nome">Reels/Videos</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:43%;background:#F39C12"></div>
+          </div>
+          <div class="tipo-valor" style="color:#F39C12">5.43%</div>
+          <div class="tipo-posts">17 posts</div>
+        </div>
+        <div class="tipo-row">
+          <div class="tipo-nome">Carrosseis</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:50%;background:#27AE60"></div>
+          </div>
+          <div class="tipo-valor" style="color:#27AE60">6.31%</div>
+          <div class="tipo-posts">22 posts</div>
+        </div>
+        <div class="tipo-row">
+          <div class="tipo-nome">Fotos</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:41%;background:#F39C12"></div>
+          </div>
+          <div class="tipo-valor" style="color:#F39C12">5.23%</div>
+          <div class="tipo-posts">13 posts</div>
+        </div>
+    </div>
+    <div class="section">
+      <div class="section-title">Engajamento por Dia da Semana</div>
+      
+        <div class="dia-row">
+          <div class="dia-nome" style="">Segunda</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:46%;background:#F39C12"></div>
+          </div>
+          <div class="tipo-valor" style="color:#F39C12">5.84%</div>
+        </div>
+        <div class="dia-row">
+          <div class="dia-nome" style="">Terca</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:32%;background:#F39C12"></div>
+          </div>
+          <div class="tipo-valor" style="color:#F39C12">4.04%</div>
+        </div>
+        <div class="dia-row">
+          <div class="dia-nome" style="">Quarta</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:46%;background:#F39C12"></div>
+          </div>
+          <div class="tipo-valor" style="color:#F39C12">5.78%</div>
+        </div>
+        <div class="dia-row">
+          <div class="dia-nome" style="">Quinta</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:43%;background:#F39C12"></div>
+          </div>
+          <div class="tipo-valor" style="color:#F39C12">5.49%</div>
+        </div>
+        <div class="dia-row">
+          <div class="dia-nome" style="">Sexta</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:50%;background:#27AE60"></div>
+          </div>
+          <div class="tipo-valor" style="color:#27AE60">6.37%</div>
+        </div>
+        <div class="dia-row">
+          <div class="dia-nome" style="font-weight:700;">Sabado</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:54%;background:#27AE60"></div>
+          </div>
+          <div class="tipo-valor" style="color:#27AE60">6.79%</div>
+        </div>
+        <div class="dia-row">
+          <div class="dia-nome" style="">Domingo</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:39%;background:#F39C12"></div>
+          </div>
+          <div class="tipo-valor" style="color:#F39C12">4.88%</div>
+        </div>
+    </div>
+  </div>
+
+  <!-- Top posts -->
+  <div class="section">
+    <div class="section-title">Top 5 Posts com Maior Engajamento</div>
+    <table>
+      <tr>
+        <th>#</th><th>Data</th><th>Formato</th>
+        <th>Curtidas</th><th>Comentarios</th><th>Engajamento</th><th>Link</th>
+      </tr>
+      
+        <tr>
+          <td class="pos">1</td>
+          <td>2025-12-17</td>
+          <td><span class="tag">GraphSidecar</span></td>
+          <td>128</td>
+          <td>7</td>
+          <td style="color:#27AE60;font-weight:700">11.76%</td>
+          <td><a href="https://www.instagram.com/p/DSYZbecjdz9/" target="_blank" class="link">Ver post</a></td>
+        </tr>
+        <tr>
+          <td class="pos">2</td>
+          <td>2025-10-25</td>
+          <td><span class="tag">GraphVideo</span></td>
+          <td>98</td>
+          <td>22</td>
+          <td style="color:#27AE60;font-weight:700">10.45%</td>
+          <td><a href="https://www.instagram.com/p/DQPUC0qjaTk/" target="_blank" class="link">Ver post</a></td>
+        </tr>
+        <tr>
+          <td class="pos">3</td>
+          <td>2025-11-30</td>
+          <td><span class="tag">GraphSidecar</span></td>
+          <td>101</td>
+          <td>8</td>
+          <td style="color:#27AE60;font-weight:700">9.49%</td>
+          <td><a href="https://www.instagram.com/p/DRr65O6DZdT/" target="_blank" class="link">Ver post</a></td>
+        </tr>
+        <tr>
+          <td class="pos">4</td>
+          <td>2025-12-19</td>
+          <td><span class="tag">GraphImage</span></td>
+          <td>105</td>
+          <td>3</td>
+          <td style="color:#27AE60;font-weight:700">9.41%</td>
+          <td><a href="https://www.instagram.com/p/DSbpAIgDQ55/" target="_blank" class="link">Ver post</a></td>
+        </tr>
+        <tr>
+          <td class="pos">5</td>
+          <td>2025-11-03</td>
+          <td><span class="tag">GraphVideo</span></td>
+          <td>91</td>
+          <td>12</td>
+          <td style="color:#27AE60;font-weight:700">8.97%</td>
+          <td><a href="https://www.instagram.com/p/DQmVW3ODQRr/" target="_blank" class="link">Ver post</a></td>
+        </tr>
+    </table>
+  </div>
+
+  <!-- Bio e CTA -->
+  <div class="section"><div class="section-title">Bio e CTA</div>
+        <div class="bio-box">
+          <div class="bio-texto">"Brilhando na vida✨ 
+🏳️‍⚧️ | Trans & orgulhosa
+  Model • Viagens • Gym • Gameplay | Guarulhos/SP
+  ✉️ Parcerias → direct | 👇 Acompanha minha jornada"</div>
+          <div class="bio-status">
+            <div class="bio-item"><span style="color:#E74C3C;font-weight:700">✘ Nao</span> CTA presente</div>
+            <div class="bio-item"><span style="color:#27AE60;font-weight:700">✔ Sim</span> Emojis</div>
+            <div class="bio-item"><span style="color:#E74C3C;font-weight:700">✘ Nao</span> Mencao ao link</div>
+            <div class="bio-item"><span style="color:#27AE60;font-weight:700">✔ Sim</span> Tamanho ideal</div>
+          </div>
+          <div class="bio-prob">⚠ Sem CTA — nao direciona o visitante para nenhuma acao</div><div class="bio-prob">⚠ Sem mencao ao link — adicione 'Link na bio' ou 'Linktree abaixo'</div>
+        </div></div>
+
+  <!-- Hashtags usadas e por performance -->
+  <div class="grid2">
+    <div class="section"><div class="section-title">Hashtags Mais Usadas</div><span class="hashtag">#trans</span><span class="hashtag">#fy</span><span class="hashtag">#destaque</span><span class="hashtag">#viral</span><span class="hashtag">#model</span><span class="hashtag">#fyp</span><span class="hashtag">#relacionamento</span><span class="hashtag">#mulhertrans</span><span class="hashtag">#transgender</span><span class="hashtag">#safada</span><span class="hashtag">#mulher</span><span class="hashtag">#feed</span><span class="hashtag">#vestido</span><span class="hashtag">#destaques</span><span class="hashtag">#gymrat</span></div>
+    <div class="section"><div class="section-title">Hashtags por Engajamento</div>
+        <div class="tipo-row">
+          <div class="tipo-nome" style="color:#833AB4;font-weight:600">#mulher</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:67%;background:#27AE60"></div>
+          </div>
+          <div class="tipo-valor" style="color:#27AE60">8.41%</div>
+        </div>
+        <div class="tipo-row">
+          <div class="tipo-nome" style="color:#833AB4;font-weight:600">#model</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:58%;background:#27AE60"></div>
+          </div>
+          <div class="tipo-valor" style="color:#27AE60">7.28%</div>
+        </div>
+        <div class="tipo-row">
+          <div class="tipo-nome" style="color:#833AB4;font-weight:600">#mulhertrans</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:57%;background:#27AE60"></div>
+          </div>
+          <div class="tipo-valor" style="color:#27AE60">7.14%</div>
+        </div>
+        <div class="tipo-row">
+          <div class="tipo-nome" style="color:#833AB4;font-weight:600">#destaque</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:54%;background:#27AE60"></div>
+          </div>
+          <div class="tipo-valor" style="color:#27AE60">6.87%</div>
+        </div>
+        <div class="tipo-row">
+          <div class="tipo-nome" style="color:#833AB4;font-weight:600">#fyp</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:52%;background:#27AE60"></div>
+          </div>
+          <div class="tipo-valor" style="color:#27AE60">6.57%</div>
+        </div>
+        <div class="tipo-row">
+          <div class="tipo-nome" style="color:#833AB4;font-weight:600">#vestido</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:49%;background:#27AE60"></div>
+          </div>
+          <div class="tipo-valor" style="color:#27AE60">6.23%</div>
+        </div>
+        <div class="tipo-row">
+          <div class="tipo-nome" style="color:#833AB4;font-weight:600">#gymrat</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:49%;background:#27AE60"></div>
+          </div>
+          <div class="tipo-valor" style="color:#27AE60">6.23%</div>
+        </div>
+        <div class="tipo-row">
+          <div class="tipo-nome" style="color:#833AB4;font-weight:600">#fy</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:49%;background:#27AE60"></div>
+          </div>
+          <div class="tipo-valor" style="color:#27AE60">6.17%</div>
+        </div>
+        <div class="tipo-row">
+          <div class="tipo-nome" style="color:#833AB4;font-weight:600">#viral</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:49%;background:#27AE60"></div>
+          </div>
+          <div class="tipo-valor" style="color:#27AE60">6.13%</div>
+        </div>
+        <div class="tipo-row">
+          <div class="tipo-nome" style="color:#833AB4;font-weight:600">#woman</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:48%;background:#27AE60"></div>
+          </div>
+          <div class="tipo-valor" style="color:#27AE60">6.05%</div>
+        </div>
+        <div class="tipo-row">
+          <div class="tipo-nome" style="color:#833AB4;font-weight:600">#feed</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:47%;background:#F39C12"></div>
+          </div>
+          <div class="tipo-valor" style="color:#F39C12">5.92%</div>
+        </div>
+        <div class="tipo-row">
+          <div class="tipo-nome" style="color:#833AB4;font-weight:600">#trans</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:46%;background:#F39C12"></div>
+          </div>
+          <div class="tipo-valor" style="color:#F39C12">5.87%</div>
+        </div></div>
+  </div>
+
+  <!-- Sugestão de hashtags -->
+  <div class="section">
+    <div class="section-title">Hashtags Sugeridas por Faixa de Alcance</div>
+    <p style="font-size:11px;color:#888;margin-bottom:12px">Nicho detectado: <strong>Fitness</strong></p><div style="margin-bottom:10px"><strong style="font-size:11px;color:#27AE60;text-transform:uppercase;letter-spacing:.5px">🌱 Micro — menos de 100 mil menções</strong><br><span class="hashtag" style="background:#27AE6022;color:#27AE60">#treinovip</span><span class="hashtag" style="background:#27AE6022;color:#27AE60">#academialife</span><span class="hashtag" style="background:#27AE6022;color:#27AE60">#corpoemforma</span><span class="hashtag" style="background:#27AE6022;color:#27AE60">#vemtreinar</span><span class="hashtag" style="background:#27AE6022;color:#27AE60">#fitnessbrasil</span></div><div style="margin-bottom:10px"><strong style="font-size:11px;color:#F39C12;text-transform:uppercase;letter-spacing:.5px">📈 Médio — 100 mil a 1 milhão</strong><br><span class="hashtag" style="background:#F39C1222;color:#F39C12">#treinobr</span><span class="hashtag" style="background:#F39C1222;color:#F39C12">#fitgirl</span><span class="hashtag" style="background:#F39C1222;color:#F39C12">#gymlife</span><span class="hashtag" style="background:#F39C1222;color:#F39C12">#bodybuilding</span><span class="hashtag" style="background:#F39C1222;color:#F39C12">#personaltrainer</span></div><div style="margin-bottom:10px"><strong style="font-size:11px;color:#E74C3C;text-transform:uppercase;letter-spacing:.5px">🔥 Grande — mais de 1 milhão</strong><br><span class="hashtag" style="background:#E74C3C22;color:#E74C3C">#treino</span><span class="hashtag" style="background:#E74C3C22;color:#E74C3C">#academia</span><span class="hashtag" style="background:#E74C3C22;color:#E74C3C">#fitness</span><span class="hashtag" style="background:#E74C3C22;color:#E74C3C">#gym</span><span class="hashtag" style="background:#E74C3C22;color:#E74C3C">#musculacao</span></div>
+  </div>
+
+  <!-- Posts para remover -->
+  
+
+  <!-- Fakes -->
+  
+        <div class="section">
+          <div class="section-title">Analise de Seguidores Suspeitos</div>
+          <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px">
+            <div class="card" style="min-width:130px">
+              <div class="card-bar" style="background:#27AE60"></div>
+              <div class="card-value" style="color:#27AE60">Excelente</div>
+              <div class="card-title">Qualidade do Publico</div>
+            </div>
+            <div class="card" style="min-width:130px">
+              <div class="card-bar" style="background:#E74C3C"></div>
+              <div class="card-value" style="color:#E74C3C">0.2%</div>
+              <div class="card-title">Suspeitos</div>
+            </div>
+            <div class="card" style="min-width:130px">
+              <div class="card-bar" style="background:#888"></div>
+              <div class="card-value">430</div>
+              <div class="card-title">Analisados</div>
+            </div>
+            <div class="card" style="min-width:130px">
+              <div class="card-bar" style="background:#E74C3C"></div>
+              <div class="card-value" style="color:#E74C3C">0</div>
+              <div class="card-title">Muito Suspeitos</div>
+            </div>
+            <div class="card" style="min-width:130px">
+              <div class="card-bar" style="background:#E67E22"></div>
+              <div class="card-value" style="color:#E67E22">1</div>
+              <div class="card-title">Suspeitos</div>
+            </div>
+            <div class="card" style="min-width:130px">
+              <div class="card-bar" style="background:#27AE60"></div>
+              <div class="card-value" style="color:#27AE60">426</div>
+              <div class="card-title">Provavelmente Reais</div>
+            </div>
+          </div>
+          <table><tr><th>#</th><th>Username</th><th>Nome</th><th>Foto Anon.</th><th>Score</th><th>Classificacao</th></tr>
+            <tr>
+              <td class="pos">1</td>
+              <td>@michelle_produtora</td>
+              <td>—</td>
+              <td>Sim</td>
+              <td style="color:#E67E22;font-weight:700">50</td>
+              <td><span style="color:#E67E22;font-weight:700;font-size:11px">Suspeito</span></td>
+            </tr></table>
+        </div>
+
+  <!-- Compra de bots -->
+  
+        <div class="section" style="border-left:4px solid #F39C12">
+          <div class="section-title">🤖 Deteccao de Compra de Seguidores</div>
+          <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px">
+            <div style="background:#F39C1222;border:1px solid #F39C1244;border-radius:10px;
+                        padding:10px 20px;text-align:center">
+              <div style="font-size:22px;font-weight:900;color:#F39C12">Moderada</div>
+              <div style="font-size:11px;color:#888;margin-top:2px">Probabilidade de compra</div>
+            </div>
+          </div>
+          <ul style="font-size:13px;color:#666;padding-left:18px;margin-bottom:14px"><li style="margin-bottom:4px">20% dos usernames com números (levemente acima do normal)</li><li style="margin-bottom:4px">Cluster de 6 perfis com username base idêntico (lote gerado automaticamente)</li></ul>
+          <div style="background:#FFF8F0;border-left:3px solid #E67E22;padding:12px 16px;
+                      border-radius:0 8px 8px 0;font-size:13px;color:#7D3C00;line-height:1.6">
+            ⚠️ Há alguns indícios de seguidores não orgânicos. Seguidores comprados prejudicam o engajamento médio do perfil, pois o algoritmo divide o alcance pelo total de seguidores — quanto mais bots, menor o % de engajamento exibido às marcas e parceiros. Monitore o crescimento e evite serviços de 'ganhar seguidores rápido'.
+          </div>
+        </div>
+
+  <!-- Top Fas -->
+  
+        <div class="section" style="text-align:center;padding:32px 24px">
+          <div style="font-size:2rem;margin-bottom:12px">🌱</div>
+          <div class="section-title" style="justify-content:center">Top Fas do Perfil</div>
+          <p style="color:#888;font-size:13px;margin-top:8px;line-height:1.7">
+            Ainda nao ha fas identificados nos posts analisados.<br>
+            Isso acontece quando os posts tem poucos comentarios ou a audiencia ainda esta crescendo.<br><br>
+            <strong style="color:#E1306C">Dica:</strong> Responda todos os comentarios, faca perguntas nas legendas
+            e use CTAs como "marque um amigo" para aumentar o engajamento e criar fas fieis. 💪
+          </p>
+        </div>
+
+  <!-- Espectadores de Stories -->
+  
+        <div class="section" style="text-align:center;padding:32px 24px">
+          <div style="font-size:2rem;margin-bottom:12px">👁</div>
+          <div class="section-title" style="justify-content:center">Espectadores de Stories</div>
+          <p style="color:#888;font-size:13px">Nenhum story ativo encontrado no perfil durante a analise.</p>
+        </div>
+
+  <!-- Destaques -->
+  
+        <div class="section">
+          <div class="section-title">📌 Analise de Destaques</div>
+          <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px">
+            <div class="metric-card"><div class="metric-value" style="color:#27AE60">94</div><div class="metric-label">Score /100</div></div>
+            <div class="metric-card"><div class="metric-value" style="color:#27AE60">Otimo</div><div class="metric-label">Status</div></div>
+            <div class="metric-card"><div class="metric-value" style="color:#3498DB">4</div><div class="metric-label">Total de destaques</div></div>
+            <div class="metric-card"><div class="metric-value" style="color:#27AE60">100%</div><div class="metric-label">Capas personalizadas</div></div>
+          </div>
+          <ul style="font-size:13px;color:#555;padding-left:18px;margin-bottom:16px"><li style="margin-bottom:6px">Dica para fitness: Antes/Depois e Resultados sao os destaques com maior potencial de conversao neste nicho.</li></ul>
+          <table style="margin-top:16px">
+              <tr><th>Destaque</th><th>Motivo</th><th>Acao</th></tr>
+              <tr>
+              <td style="font-weight:700;color:#E67E22">Auto Cuidado</td>
+              <td style="color:#888">So 1 midia — muito pouco conteudo. Adicione mais stories ou expanda o tema.</td>
+              <td><span style="background:#E67E22;color:#fff;padding:2px 8px;border-radius:4px;font-size:11px">Ajustar</span></td>
+            </tr><tr>
+              <td style="font-weight:700;color:#E67E22">Reflexão</td>
+              <td style="color:#888">So 1 midia — muito pouco conteudo. Adicione mais stories ou expanda o tema.</td>
+              <td><span style="background:#E67E22;color:#fff;padding:2px 8px;border-radius:4px;font-size:11px">Ajustar</span></td>
+            </tr>
+            </table>
+          <div style="margin-top:16px">
+          <div style="font-size:13px;font-weight:700;color:#27AE60;margin-bottom:8px">Adicionar — temas recomendados para o nicho "fitness":</div>
+          <span style="background:#E8F8F0;color:#27AE60;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;margin:3px;display:inline-block">+ Treinos</span><span style="background:#E8F8F0;color:#27AE60;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;margin:3px;display:inline-block">+ Receitas</span><span style="background:#E8F8F0;color:#27AE60;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;margin:3px;display:inline-block">+ Resultados</span><span style="background:#E8F8F0;color:#27AE60;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;margin:3px;display:inline-block">+ Dicas</span><span style="background:#E8F8F0;color:#27AE60;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;margin:3px;display:inline-block">+ Rotina</span><span style="background:#E8F8F0;color:#27AE60;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;margin:3px;display:inline-block">+ Dieta</span>
+        </div>
+          <table style="margin-top:16px">
+          <tr><th>Titulo</th><th style="text-align:center">Midias</th><th style="text-align:center">Capa personalizada</th></tr>
+          <tr>
+              <td style="font-weight:700">Vestidos 👗</td>
+              <td style="text-align:center">16</td>
+              <td style="text-align:center"><span style="color:#27AE60">✔</span></td>
+            </tr><tr>
+              <td style="font-weight:700">GYM</td>
+              <td style="text-align:center">17</td>
+              <td style="text-align:center"><span style="color:#27AE60">✔</span></td>
+            </tr><tr>
+              <td style="font-weight:700">Auto Cuidado</td>
+              <td style="text-align:center">1</td>
+              <td style="text-align:center"><span style="color:#27AE60">✔</span></td>
+            </tr><tr>
+              <td style="font-weight:700">Reflexão</td>
+              <td style="text-align:center">1</td>
+              <td style="text-align:center"><span style="color:#27AE60">✔</span></td>
+            </tr>
+        </table>
+        </div>
+
+  <!-- Recomendacoes -->
+  <div class="section">
+    <div class="section-title">Recomendacoes Estrategicas</div>
+    
+        <div class="rec-card">
+          <div class="rec-header" style="border-left:4px solid #27AE60">
+            <span class="rec-badge" style="background:#27AE60">INFO</span>
+            <span class="rec-cat">🟢 Engajamento Geral</span>
+          </div>
+          <p class="rec-situacao">Taxa de 5.75% acima do benchmark para perfis nano (5.0%). Otimo!</p>
+          <ul class="rec-acoes"><li>Mantenha a consistencia de conteudo e horarios.</li></ul>
+        </div>
+        <div class="rec-card">
+          <div class="rec-header" style="border-left:4px solid #E74C3C">
+            <span class="rec-badge" style="background:#E74C3C">ALTA</span>
+            <span class="rec-cat">🔴 Formato de Conteudo</span>
+          </div>
+          <p class="rec-situacao">Carrosseis geram mais engajamento (6.31%).</p>
+          <ul class="rec-acoes"><li>Priorize a criacao de Carrosseis.</li><li>Reels tem distribuicao organica maior pelo algoritmo.</li><li>Carrosseis aumentam o tempo de visualizacao, favorecidos pelo algoritmo.</li></ul>
+        </div>
+        <div class="rec-card">
+          <div class="rec-header" style="border-left:4px solid #F39C12">
+            <span class="rec-badge" style="background:#F39C12">MEDIA</span>
+            <span class="rec-cat">🟡 Horario de Publicacao</span>
+          </div>
+          <p class="rec-situacao">Melhor engajamento na Sabado as 4h UTC (1h horario de Brasilia).</p>
+          <ul class="rec-acoes"><li>Concentre publicacoes na Sabado entre 1h e 3h (Brasilia).</li><li>Use o agendamento do Creator Studio ou apps como Later/Buffer.</li><li>Poste nos Stories diariamente para manter presenca constante.</li></ul>
+        </div>
+        <div class="rec-card">
+          <div class="rec-header" style="border-left:4px solid #F39C12">
+            <span class="rec-badge" style="background:#F39C12">MEDIA</span>
+            <span class="rec-cat">🟡 Frequencia de Postagem</span>
+          </div>
+          <p class="rec-situacao">Frequencia atual de 0.3x/semana esta abaixo do recomendado.</p>
+          <ul class="rec-acoes"><li>Meta minima: 3-5 posts/semana no feed.</li><li>Stories: 5-10 por dia para manter engajamento diario.</li><li>Crie um calendario editorial com temas por dia da semana.</li><li>Reaproveite conteudo antigo de alto desempenho em novo formato.</li></ul>
+        </div>
+        <div class="rec-card">
+          <div class="rec-header" style="border-left:4px solid #3498DB">
+            <span class="rec-badge" style="background:#3498DB">BAIXA</span>
+            <span class="rec-cat">🔵 Hashtags</span>
+          </div>
+          <p class="rec-situacao">Media de 2.9 hashtags por post esta baixa.</p>
+          <ul class="rec-acoes"><li>Use entre 5 e 15 hashtags relevantes por post.</li><li>Misture: grandes (>1M), medias (100k-1M) e de nicho (<100k).</li><li>Mais usadas: #trans, #fy, #destaque, #viral, #model</li><li>Nao repita as mesmas hashtags em todos os posts.</li></ul>
+        </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  Relatorio gerado automaticamente pelo Instagram Analyzer Pro &nbsp;·&nbsp; 06/04/2026
+</div>
+
+</body>
+</html>
