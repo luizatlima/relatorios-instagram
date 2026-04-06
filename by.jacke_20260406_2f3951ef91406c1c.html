@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Relatorio Instagram — @by.jacke</title>
+<style>
+  * { box-sizing:border-box; margin:0; padding:0 }
+  body { font-family:'Segoe UI',Arial,sans-serif; background:#F0F2F5; color:#333 }
+  a { color:inherit; text-decoration:none }
+
+  /* Header */
+  .header { background:linear-gradient(135deg,#1A1A2E 0%,#16213E 60%,#0F3460 100%);
+             padding:32px 40px; color:white }
+  .header-top { display:flex; align-items:center; gap:16px; margin-bottom:8px }
+  .ig-icon { width:48px;height:48px;background:#E1306C;border-radius:12px;
+              display:flex;align-items:center;justify-content:center;
+              font-size:24px;font-weight:900;color:white }
+  .header h1 { font-size:26px; font-weight:800 }
+  .header h1 span { color:#E1306C }
+  .header-sub { color:#aaa; font-size:13px; margin-top:4px }
+  .header-meta { display:flex; gap:24px; margin-top:16px }
+  .meta-item { font-size:12px; color:#888 }
+  .meta-item strong { color:white; font-size:14px; display:block }
+
+  /* Layout */
+  .container { max-width:1100px; margin:0 auto; padding:28px 20px }
+  .section { background:white; border-radius:12px; padding:24px;
+              margin-bottom:20px; box-shadow:0 2px 8px rgba(0,0,0,.06) }
+  .section-title { font-size:16px; font-weight:700; margin-bottom:16px;
+                    color:#1A1A2E; display:flex; align-items:center; gap:8px }
+  .section-title::before { content:''; display:block; width:4px; height:18px;
+                             background:#E1306C; border-radius:2px }
+
+  /* Cards */
+  .cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:12px }
+  .card { background:#F8F9FA; border-radius:10px; padding:16px 12px; text-align:center;
+           position:relative; overflow:hidden }
+  .card-bar { position:absolute; top:0; left:0; right:0; height:3px }
+  .card-value { font-size:22px; font-weight:800; margin-top:6px }
+  .card-title { font-size:11px; color:#888; margin-top:4px }
+
+  /* Engajamento badge */
+  .eng-badge { display:inline-block; padding:4px 14px; border-radius:20px; font-size:13px;
+                font-weight:700; color:white; background:#27AE60; margin-left:10px }
+
+  /* Barras */
+  .tipo-row,.dia-row { display:flex; align-items:center; gap:10px;
+                        padding:8px 0; border-bottom:1px solid #f0f0f0 }
+  .tipo-nome,.dia-nome { width:130px; font-size:12px; flex-shrink:0 }
+  .tipo-bar-wrap { flex:1; background:#f0f0f0; border-radius:4px; height:8px; overflow:hidden }
+  .tipo-bar { height:100%; border-radius:4px; transition:width .3s }
+  .tipo-valor { width:55px; text-align:right; font-size:12px; font-weight:700; flex-shrink:0 }
+  .tipo-posts { width:60px; text-align:right; font-size:11px; color:#888; flex-shrink:0 }
+
+  /* Tabela top posts */
+  table { width:100%; border-collapse:collapse; font-size:13px }
+  th { background:#1A1A2E; color:white; padding:10px 12px; text-align:left; font-weight:600 }
+  td { padding:10px 12px; border-bottom:1px solid #f0f0f0 }
+  tr:last-child td { border-bottom:none }
+  tr:hover td { background:#fafafa }
+  .pos { font-weight:800; color:#E1306C; width:30px }
+  .tag { background:#f0f0f0; padding:3px 8px; border-radius:12px; font-size:11px }
+  .link { color:#E1306C; font-weight:600 }
+  .link:hover { text-decoration:underline }
+
+  /* Recomendacoes */
+  .rec-card { background:#F8F9FA; border-radius:10px; padding:16px;
+               margin-bottom:12px; border-left:4px solid #eee }
+  .rec-header { display:flex; align-items:center; gap:10px; margin-bottom:8px }
+  .rec-badge { padding:3px 10px; border-radius:12px; font-size:10px;
+                font-weight:800; color:white }
+  .rec-cat { font-size:14px; font-weight:700 }
+  .rec-situacao { font-size:12px; color:#666; margin-bottom:8px; line-height:1.5 }
+  .rec-acoes { padding-left:16px; font-size:12px; color:#444; line-height:1.8 }
+
+  /* Hashtags */
+  .hashtag { display:inline-block; background:#F0E6FF; color:#833AB4;
+              padding:4px 10px; border-radius:14px; font-size:12px;
+              font-weight:600; margin:3px }
+
+  /* Bio */
+  .bio-box { background:#F8F9FA; border-radius:10px; padding:16px }
+  .bio-texto { font-size:14px; font-style:italic; color:#444; margin-bottom:12px;
+                line-height:1.6; border-left:3px solid #E1306C; padding-left:12px }
+  .bio-status { display:flex; flex-wrap:wrap; gap:12px; margin-bottom:10px }
+  .bio-item { font-size:12px; background:white; padding:4px 10px; border-radius:8px;
+               box-shadow:0 1px 3px rgba(0,0,0,.08) }
+  .bio-prob { font-size:12px; color:#E67E22; background:#FFF8F0;
+               padding:6px 10px; border-radius:6px; margin-top:4px }
+
+  /* Grid 2 colunas */
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:20px }
+
+  /* Footer */
+  .footer { text-align:center; padding:24px; color:#aaa; font-size:12px }
+
+  @media(max-width:700px) {
+    .header { padding:20px } .cards { grid-template-columns:repeat(2,1fr) }
+    .grid2 { grid-template-columns:1fr }
+    .header-meta { flex-wrap:wrap; gap:12px }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="ig-icon">@</div>
+    <div>
+      <h1>@<span>by.jacke</span></h1>
+      <div class="header-sub">Jacke Trindade | Criadora de conteúdo &nbsp;·&nbsp; Relatorio gerado em 06/04/2026</div>
+    </div>
+    <div style="margin-left:auto">
+      <span class="eng-badge">Excelente</span>
+    </div>
+  </div>
+  <div class="header-meta">
+    <div class="meta-item"><strong>3,454</strong>Seguidores</div>
+    <div class="meta-item"><strong style="color:#27AE60">90.38%</strong>Engajamento</div>
+    <div class="meta-item"><strong>NANO</strong>Categoria</div>
+    <div class="meta-item"><strong>5.0%</strong>Benchmark</div>
+    <div class="meta-item"><strong>30</strong>Posts Analisados</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Cards -->
+  <div class="section">
+    <div class="section-title">Metricas Principais</div>
+    <div class="cards">
+        <div class="card">
+          <div class="card-bar" style="background:#E1306C"></div>
+          <div class="card-value" style="color:#E1306C">3,454</div>
+          <div class="card-title">Seguidores</div>
+        </div>
+        <div class="card">
+          <div class="card-bar" style="background:#27AE60"></div>
+          <div class="card-value" style="color:#27AE60">90.38%</div>
+          <div class="card-title">Engajamento</div>
+        </div>
+        <div class="card">
+          <div class="card-bar" style="background:#F77737"></div>
+          <div class="card-value" style="color:#F77737">3086</div>
+          <div class="card-title">Curtidas Medias</div>
+        </div>
+        <div class="card">
+          <div class="card-bar" style="background:#833AB4"></div>
+          <div class="card-value" style="color:#833AB4">36</div>
+          <div class="card-title">Comentarios Med.</div>
+        </div>
+        <div class="card">
+          <div class="card-bar" style="background:#3498DB"></div>
+          <div class="card-value" style="color:#3498DB">Quarta</div>
+          <div class="card-title">Melhor Dia</div>
+        </div>
+        <div class="card">
+          <div class="card-bar" style="background:#1ABC9C"></div>
+          <div class="card-value" style="color:#1ABC9C">21h</div>
+          <div class="card-title">Melhor Hora</div>
+        </div>
+        <div class="card">
+          <div class="card-bar" style="background:#E67E22"></div>
+          <div class="card-value" style="color:#E67E22">1.8x</div>
+          <div class="card-title">Posts/Semana</div>
+        </div>
+        <div class="card">
+          <div class="card-bar" style="background:#9B59B6"></div>
+          <div class="card-value" style="color:#9B59B6">Reels/Videos</div>
+          <div class="card-title">Formato Ideal</div>
+        </div></div>
+  </div>
+
+  <!-- Graficos textuais -->
+  <div class="grid2">
+    <div class="section">
+      <div class="section-title">Engajamento por Formato</div>
+      
+        <div class="tipo-row">
+          <div class="tipo-nome">Reels/Videos</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:100%;background:#27AE60"></div>
+          </div>
+          <div class="tipo-valor" style="color:#27AE60">108.30%</div>
+          <div class="tipo-posts">25 posts</div>
+        </div>
+        <div class="tipo-row">
+          <div class="tipo-nome">Fotos</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:2%;background:#E74C3C"></div>
+          </div>
+          <div class="tipo-valor" style="color:#E74C3C">0.32%</div>
+          <div class="tipo-posts">1 posts</div>
+        </div>
+        <div class="tipo-row">
+          <div class="tipo-nome">Carrosseis</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:7%;background:#E74C3C"></div>
+          </div>
+          <div class="tipo-valor" style="color:#E74C3C">0.92%</div>
+          <div class="tipo-posts">4 posts</div>
+        </div>
+    </div>
+    <div class="section">
+      <div class="section-title">Engajamento por Dia da Semana</div>
+      
+        <div class="dia-row">
+          <div class="dia-nome" style="">Segunda</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:11%;background:#E67E22"></div>
+          </div>
+          <div class="tipo-valor" style="color:#E67E22">1.48%</div>
+        </div>
+        <div class="dia-row">
+          <div class="dia-nome" style="">Terca</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:9%;background:#E67E22"></div>
+          </div>
+          <div class="tipo-valor" style="color:#E67E22">1.16%</div>
+        </div>
+        <div class="dia-row">
+          <div class="dia-nome" style="font-weight:700;">Quarta</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:100%;background:#27AE60"></div>
+          </div>
+          <div class="tipo-valor" style="color:#27AE60">855.22%</div>
+        </div>
+        <div class="dia-row">
+          <div class="dia-nome" style="">Quinta</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:97%;background:#27AE60"></div>
+          </div>
+          <div class="tipo-valor" style="color:#27AE60">12.18%</div>
+        </div>
+        <div class="dia-row">
+          <div class="dia-nome" style="">Sexta</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:100%;background:#27AE60"></div>
+          </div>
+          <div class="tipo-valor" style="color:#27AE60">43.11%</div>
+        </div>
+        <div class="dia-row">
+          <div class="dia-nome" style="">Sabado</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:16%;background:#E67E22"></div>
+          </div>
+          <div class="tipo-valor" style="color:#E67E22">2.11%</div>
+        </div>
+        <div class="dia-row">
+          <div class="dia-nome" style="">Domingo</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:7%;background:#E74C3C"></div>
+          </div>
+          <div class="tipo-valor" style="color:#E74C3C">0.96%</div>
+        </div>
+    </div>
+  </div>
+
+  <!-- Top posts -->
+  <div class="section">
+    <div class="section-title">Top 5 Posts com Maior Engajamento</div>
+    <table>
+      <tr>
+        <th>#</th><th>Data</th><th>Formato</th>
+        <th>Curtidas</th><th>Comentarios</th><th>Engajamento</th><th>Link</th>
+      </tr>
+      
+        <tr>
+          <td class="pos">1</td>
+          <td>2025-12-10</td>
+          <td><span class="tag">GraphVideo</span></td>
+          <td>87,538</td>
+          <td>1004</td>
+          <td style="color:#27AE60;font-weight:700">2563.46%</td>
+          <td><a href="https://www.instagram.com/p/DSED2aMDqeS/" target="_blank" class="link">Ver post</a></td>
+        </tr>
+        <tr>
+          <td class="pos">2</td>
+          <td>2025-12-11</td>
+          <td><span class="tag">GraphVideo</span></td>
+          <td>2,316</td>
+          <td>16</td>
+          <td style="color:#27AE60;font-weight:700">67.52%</td>
+          <td><a href="https://www.instagram.com/p/DSGk29RDo5W/" target="_blank" class="link">Ver post</a></td>
+        </tr>
+        <tr>
+          <td class="pos">3</td>
+          <td>2025-12-12</td>
+          <td><span class="tag">GraphVideo</span></td>
+          <td>1,478</td>
+          <td>11</td>
+          <td style="color:#27AE60;font-weight:700">43.11%</td>
+          <td><a href="https://www.instagram.com/p/DSJJsuYjqt7/" target="_blank" class="link">Ver post</a></td>
+        </tr>
+        <tr>
+          <td class="pos">4</td>
+          <td>2025-12-13</td>
+          <td><span class="tag">GraphVideo</span></td>
+          <td>199</td>
+          <td>0</td>
+          <td style="color:#F39C12;font-weight:700">5.76%</td>
+          <td><a href="https://www.instagram.com/p/DSLu2UbDvHw/" target="_blank" class="link">Ver post</a></td>
+        </tr>
+        <tr>
+          <td class="pos">5</td>
+          <td>2025-12-15</td>
+          <td><span class="tag">GraphVideo</span></td>
+          <td>181</td>
+          <td>0</td>
+          <td style="color:#F39C12;font-weight:700">5.24%</td>
+          <td><a href="https://www.instagram.com/p/DSR_-B8jmCc/" target="_blank" class="link">Ver post</a></td>
+        </tr>
+    </table>
+  </div>
+
+  <!-- Bio e CTA -->
+  <div class="section"><div class="section-title">Bio e CTA</div>
+        <div class="bio-box">
+          <div class="bio-texto">"Criadora de Conteúdo | UGC 📱✨  
+Ajudo marcas a vender mais 🚀  
+Parcerias & publis no WhatsApp 👇  
+(11) 91506-3938  
+📍 Guarulhos  
+• @beeamaaia 💍❤️"</div>
+          <div class="bio-status">
+            <div class="bio-item"><span style="color:#27AE60;font-weight:700">✔ Sim</span> CTA presente</div>
+            <div class="bio-item"><span style="color:#27AE60;font-weight:700">✔ Sim</span> Emojis</div>
+            <div class="bio-item"><span style="color:#E74C3C;font-weight:700">✘ Nao</span> Mencao ao link</div>
+            <div class="bio-item"><span style="color:#27AE60;font-weight:700">✔ Sim</span> Tamanho ideal</div>
+          </div>
+          <div class="bio-prob">⚠ Sem mencao ao link — adicione 'Link na bio' ou 'Linktree abaixo'</div>
+        </div></div>
+
+  <!-- Hashtags -->
+  <div class="grid2">
+    <div class="section"><div class="section-title">Hashtags Mais Usadas</div><span class="hashtag">#viralvideos</span><span class="hashtag">#viral</span><span class="hashtag">#vaiproexplorar</span><span class="hashtag">#fyp</span><span class="hashtag">#entreterimento</span><span class="hashtag">#indiretas</span><span class="hashtag">#reels</span><span class="hashtag">#fy</span><span class="hashtag">#foryou</span><span class="hashtag">#natanzinholima</span><span class="hashtag">#natanzinholimaoficial</span><span class="hashtag">#trabalho</span><span class="hashtag">#meme</span><span class="hashtag">#natanzinho</span><span class="hashtag">#comida</span></div>
+    <div class="section"><div class="section-title">Hashtags por Engajamento</div>
+        <div class="tipo-row">
+          <div class="tipo-nome" style="color:#833AB4;font-weight:600">#festival</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:100%;background:#27AE60"></div>
+          </div>
+          <div class="tipo-valor" style="color:#27AE60">1303.29%</div>
+        </div>
+        <div class="tipo-row">
+          <div class="tipo-nome" style="color:#833AB4;font-weight:600">#festshow</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:100%;background:#27AE60"></div>
+          </div>
+          <div class="tipo-valor" style="color:#27AE60">1303.29%</div>
+        </div>
+        <div class="tipo-row">
+          <div class="tipo-nome" style="color:#833AB4;font-weight:600">#natanzinholimaoficial</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:100%;background:#27AE60"></div>
+          </div>
+          <div class="tipo-valor" style="color:#27AE60">870.60%</div>
+        </div>
+        <div class="tipo-row">
+          <div class="tipo-nome" style="color:#833AB4;font-weight:600">#natanzinholima</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:100%;background:#27AE60"></div>
+          </div>
+          <div class="tipo-valor" style="color:#27AE60">536.91%</div>
+        </div>
+        <div class="tipo-row">
+          <div class="tipo-nome" style="color:#833AB4;font-weight:600">#fy</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:100%;background:#27AE60"></div>
+          </div>
+          <div class="tipo-valor" style="color:#27AE60">523.72%</div>
+        </div>
+        <div class="tipo-row">
+          <div class="tipo-nome" style="color:#833AB4;font-weight:600">#foryou</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:100%;background:#27AE60"></div>
+          </div>
+          <div class="tipo-valor" style="color:#27AE60">515.10%</div>
+        </div>
+        <div class="tipo-row">
+          <div class="tipo-nome" style="color:#833AB4;font-weight:600">#entreterimento</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:100%;background:#27AE60"></div>
+          </div>
+          <div class="tipo-valor" style="color:#27AE60">224.33%</div>
+        </div>
+        <div class="tipo-row">
+          <div class="tipo-nome" style="color:#833AB4;font-weight:600">#fyp</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:100%;background:#27AE60"></div>
+          </div>
+          <div class="tipo-valor" style="color:#27AE60">207.13%</div>
+        </div>
+        <div class="tipo-row">
+          <div class="tipo-nome" style="color:#833AB4;font-weight:600">#vaiproexplorar</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:100%;background:#27AE60"></div>
+          </div>
+          <div class="tipo-valor" style="color:#27AE60">192.45%</div>
+        </div>
+        <div class="tipo-row">
+          <div class="tipo-nome" style="color:#833AB4;font-weight:600">#viral</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:100%;background:#27AE60"></div>
+          </div>
+          <div class="tipo-valor" style="color:#27AE60">122.94%</div>
+        </div>
+        <div class="tipo-row">
+          <div class="tipo-nome" style="color:#833AB4;font-weight:600">#viralvideos</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:100%;background:#27AE60"></div>
+          </div>
+          <div class="tipo-valor" style="color:#27AE60">112.72%</div>
+        </div>
+        <div class="tipo-row">
+          <div class="tipo-nome" style="color:#833AB4;font-weight:600">#guarufest</div>
+          <div class="tipo-bar-wrap">
+            <div class="tipo-bar" style="width:100%;background:#27AE60"></div>
+          </div>
+          <div class="tipo-valor" style="color:#27AE60">55.31%</div>
+        </div></div>
+  </div>
+
+  <!-- Posts para remover -->
+  
+        <div class="section">
+          <div class="section-title">Posts para Remover</div>
+          <p style="font-size:12px;color:#E74C3C;margin-bottom:12px">
+            28 posts abaixo de 45.19% &nbsp;|&nbsp;
+            Removendo todos: <strong>90.38% &rarr; 1315.49%</strong>
+          </p>
+          <table>
+            <tr><th>#</th><th>Data</th><th>Formato</th><th>Curtidas</th><th>Comentarios</th><th>Engajamento</th><th>Link</th></tr>
+            
+            <tr>
+              <td class="pos">1</td>
+              <td>2026-03-30</td>
+              <td><span class="tag">GraphVideo</span></td>
+              <td>9</td>
+              <td>0</td>
+              <td style="color:#E74C3C;font-weight:700">0.26%</td>
+              <td><a href="https://www.instagram.com/p/DWfRiEIDmja/" target="_blank" class="link">Ver post</a></td>
+            </tr>
+            <tr>
+              <td class="pos">2</td>
+              <td>2026-01-25</td>
+              <td><span class="tag">GraphVideo</span></td>
+              <td>10</td>
+              <td>0</td>
+              <td style="color:#E74C3C;font-weight:700">0.29%</td>
+              <td><a href="https://www.instagram.com/p/DT890LGDqiE/" target="_blank" class="link">Ver post</a></td>
+            </tr>
+            <tr>
+              <td class="pos">3</td>
+              <td>2026-04-06</td>
+              <td><span class="tag">GraphImage</span></td>
+              <td>11</td>
+              <td>0</td>
+              <td style="color:#E74C3C;font-weight:700">0.32%</td>
+              <td><a href="https://www.instagram.com/p/DWxXzttjm7r/" target="_blank" class="link">Ver post</a></td>
+            </tr>
+            <tr>
+              <td class="pos">4</td>
+              <td>2026-02-08</td>
+              <td><span class="tag">GraphVideo</span></td>
+              <td>16</td>
+              <td>0</td>
+              <td style="color:#E74C3C;font-weight:700">0.46%</td>
+              <td><a href="https://www.instagram.com/p/DUgCLe9DgfO/" target="_blank" class="link">Ver post</a></td>
+            </tr>
+            <tr>
+              <td class="pos">5</td>
+              <td>2026-02-19</td>
+              <td><span class="tag">GraphSidecar</span></td>
+              <td>17</td>
+              <td>2</td>
+              <td style="color:#E74C3C;font-weight:700">0.55%</td>
+              <td><a href="https://www.instagram.com/p/DU8avbhjpO9/" target="_blank" class="link">Ver post</a></td>
+            </tr>
+            <tr>
+              <td class="pos">6</td>
+              <td>2026-01-25</td>
+              <td><span class="tag">GraphVideo</span></td>
+              <td>22</td>
+              <td>0</td>
+              <td style="color:#E74C3C;font-weight:700">0.64%</td>
+              <td><a href="https://www.instagram.com/p/DT6nBX6jjy6/" target="_blank" class="link">Ver post</a></td>
+            </tr>
+            <tr>
+              <td class="pos">7</td>
+              <td>2026-03-25</td>
+              <td><span class="tag">GraphVideo</span></td>
+              <td>22</td>
+              <td>1</td>
+              <td style="color:#E74C3C;font-weight:700">0.67%</td>
+              <td><a href="https://www.instagram.com/p/DWScIU_jV6X/" target="_blank" class="link">Ver post</a></td>
+            </tr>
+            <tr>
+              <td class="pos">8</td>
+              <td>2026-02-19</td>
+              <td><span class="tag">GraphVideo</span></td>
+              <td>21</td>
+              <td>2</td>
+              <td style="color:#E74C3C;font-weight:700">0.67%</td>
+              <td><a href="https://www.instagram.com/p/DU7E3BVDrHn/" target="_blank" class="link">Ver post</a></td>
+            </tr>
+            <tr>
+              <td class="pos">9</td>
+              <td>2026-02-26</td>
+              <td><span class="tag">GraphVideo</span></td>
+              <td>22</td>
+              <td>1</td>
+              <td style="color:#E74C3C;font-weight:700">0.67%</td>
+              <td><a href="https://www.instagram.com/p/DVM1u1Rjs9A/" target="_blank" class="link">Ver post</a></td>
+            </tr>
+            <tr>
+              <td class="pos">10</td>
+              <td>2026-01-13</td>
+              <td><span class="tag">GraphVideo</span></td>
+              <td>25</td>
+              <td>0</td>
+              <td style="color:#E74C3C;font-weight:700">0.72%</td>
+              <td><a href="https://www.instagram.com/p/DTbvC8_Dkel/" target="_blank" class="link">Ver post</a></td>
+            </tr>
+            <tr>
+              <td class="pos">11</td>
+              <td>2026-01-17</td>
+              <td><span class="tag">GraphSidecar</span></td>
+              <td>25</td>
+              <td>1</td>
+              <td style="color:#E74C3C;font-weight:700">0.75%</td>
+              <td><a href="https://www.instagram.com/p/DToXTJ_jssV/" target="_blank" class="link">Ver post</a></td>
+            </tr>
+            <tr>
+              <td class="pos">12</td>
+              <td>2026-03-16</td>
+              <td><span class="tag">GraphVideo</span></td>
+              <td>29</td>
+              <td>4</td>
+              <td style="color:#E74C3C;font-weight:700">0.96%</td>
+              <td><a href="https://www.instagram.com/p/DV7Qr5-jkBz/" target="_blank" class="link">Ver post</a></td>
+            </tr>
+            <tr>
+              <td class="pos">13</td>
+              <td>2026-01-10</td>
+              <td><span class="tag">GraphVideo</span></td>
+              <td>36</td>
+              <td>0</td>
+              <td style="color:#E74C3C;font-weight:700">1.04%</td>
+              <td><a href="https://www.instagram.com/p/DTUFU-VDsXs/" target="_blank" class="link">Ver post</a></td>
+            </tr>
+            <tr>
+              <td class="pos">14</td>
+              <td>2025-12-29</td>
+              <td><span class="tag">GraphVideo</span></td>
+              <td>36</td>
+              <td>0</td>
+              <td style="color:#E74C3C;font-weight:700">1.04%</td>
+              <td><a href="https://www.instagram.com/p/DS1GSQpjiN3/" target="_blank" class="link">Ver post</a></td>
+            </tr>
+            <tr>
+              <td class="pos">15</td>
+              <td>2026-04-06</td>
+              <td><span class="tag">GraphVideo</span></td>
+              <td>34</td>
+              <td>2</td>
+              <td style="color:#E74C3C;font-weight:700">1.04%</td>
+              <td><a href="https://www.instagram.com/p/DWxTcxeDoAf/" target="_blank" class="link">Ver post</a></td>
+            </tr>
+            <tr>
+              <td class="pos">16</td>
+              <td>2026-01-04</td>
+              <td><span class="tag">GraphSidecar</span></td>
+              <td>33</td>
+              <td>4</td>
+              <td style="color:#E74C3C;font-weight:700">1.07%</td>
+              <td><a href="https://www.instagram.com/p/DTG2eqGjuwr/" target="_blank" class="link">Ver post</a></td>
+            </tr>
+            <tr>
+              <td class="pos">17</td>
+              <td>2026-01-15</td>
+              <td><span class="tag">GraphVideo</span></td>
+              <td>37</td>
+              <td>6</td>
+              <td style="color:#E74C3C;font-weight:700">1.24%</td>
+              <td><a href="https://www.instagram.com/p/DTjJBIgDhyy/" target="_blank" class="link">Ver post</a></td>
+            </tr>
+            <tr>
+              <td class="pos">18</td>
+              <td>2025-12-20</td>
+              <td><span class="tag">GraphVideo</span></td>
+              <td>34</td>
+              <td>10</td>
+              <td style="color:#E74C3C;font-weight:700">1.27%</td>
+              <td><a href="https://www.instagram.com/p/DSd0y4Gjvty/" target="_blank" class="link">Ver post</a></td>
+            </tr>
+            <tr>
+              <td class="pos">19</td>
+              <td>2026-03-08</td>
+              <td><span class="tag">GraphSidecar</span></td>
+              <td>37</td>
+              <td>8</td>
+              <td style="color:#E74C3C;font-weight:700">1.30%</td>
+              <td><a href="https://www.instagram.com/p/DVn5AZYDjS3/" target="_blank" class="link">Ver post</a></td>
+            </tr>
+            <tr>
+              <td class="pos">20</td>
+              <td>2026-03-07</td>
+              <td><span class="tag">GraphVideo</span></td>
+              <td>49</td>
+              <td>0</td>
+              <td style="color:#E74C3C;font-weight:700">1.42%</td>
+              <td><a href="https://www.instagram.com/p/DVmSIoTDoLr/" target="_blank" class="link">Ver post</a></td>
+            </tr>
+            <tr>
+              <td class="pos">21</td>
+              <td>2025-12-17</td>
+              <td><span class="tag">GraphVideo</span></td>
+              <td>51</td>
+              <td>2</td>
+              <td style="color:#E74C3C;font-weight:700">1.53%</td>
+              <td><a href="https://www.instagram.com/p/DSWA1U-Dlro/" target="_blank" class="link">Ver post</a></td>
+            </tr>
+            <tr>
+              <td class="pos">22</td>
+              <td>2026-01-27</td>
+              <td><span class="tag">GraphVideo</span></td>
+              <td>52</td>
+              <td>3</td>
+              <td style="color:#E74C3C;font-weight:700">1.59%</td>
+              <td><a href="https://www.instagram.com/p/DUB91o9DuYq/" target="_blank" class="link">Ver post</a></td>
+            </tr>
+            <tr>
+              <td class="pos">23</td>
+              <td>2025-12-28</td>
+              <td><span class="tag">GraphVideo</span></td>
+              <td>69</td>
+              <td>0</td>
+              <td style="color:#E74C3C;font-weight:700">2.00%</td>
+              <td><a href="https://www.instagram.com/p/DSyXVvtjsLX/" target="_blank" class="link">Ver post</a></td>
+            </tr>
+            <tr>
+              <td class="pos">24</td>
+              <td>2026-01-03</td>
+              <td><span class="tag">GraphVideo</span></td>
+              <td>84</td>
+              <td>0</td>
+              <td style="color:#E74C3C;font-weight:700">2.43%</td>
+              <td><a href="https://www.instagram.com/p/DTB_0rFjtLE/" target="_blank" class="link">Ver post</a></td>
+            </tr>
+            <tr>
+              <td class="pos">25</td>
+              <td>2026-03-19</td>
+              <td><span class="tag">GraphVideo</span></td>
+              <td>85</td>
+              <td>0</td>
+              <td style="color:#E74C3C;font-weight:700">2.46%</td>
+              <td><a href="https://www.instagram.com/p/DWD4cGRjowj/" target="_blank" class="link">Ver post</a></td>
+            </tr>
+            <tr>
+              <td class="pos">26</td>
+              <td>2025-12-15</td>
+              <td><span class="tag">GraphVideo</span></td>
+              <td>181</td>
+              <td>0</td>
+              <td style="color:#E74C3C;font-weight:700">5.24%</td>
+              <td><a href="https://www.instagram.com/p/DSR_-B8jmCc/" target="_blank" class="link">Ver post</a></td>
+            </tr>
+            <tr>
+              <td class="pos">27</td>
+              <td>2025-12-13</td>
+              <td><span class="tag">GraphVideo</span></td>
+              <td>199</td>
+              <td>0</td>
+              <td style="color:#E74C3C;font-weight:700">5.76%</td>
+              <td><a href="https://www.instagram.com/p/DSLu2UbDvHw/" target="_blank" class="link">Ver post</a></td>
+            </tr>
+            <tr>
+              <td class="pos">28</td>
+              <td>2025-12-12</td>
+              <td><span class="tag">GraphVideo</span></td>
+              <td>1,478</td>
+              <td>11</td>
+              <td style="color:#E74C3C;font-weight:700">43.11%</td>
+              <td><a href="https://www.instagram.com/p/DSJJsuYjqt7/" target="_blank" class="link">Ver post</a></td>
+            </tr>
+          </table>
+        </div>
+
+  <!-- Recomendacoes -->
+  <div class="section">
+    <div class="section-title">Recomendacoes Estrategicas</div>
+    
+        <div class="rec-card">
+          <div class="rec-header" style="border-left:4px solid #27AE60">
+            <span class="rec-badge" style="background:#27AE60">INFO</span>
+            <span class="rec-cat">🟢 Engajamento Geral</span>
+          </div>
+          <p class="rec-situacao">Taxa de 90.38% acima do benchmark para perfis nano (5.0%). Otimo!</p>
+          <ul class="rec-acoes"><li>Mantenha a consistencia de conteudo e horarios.</li></ul>
+        </div>
+        <div class="rec-card">
+          <div class="rec-header" style="border-left:4px solid #E74C3C">
+            <span class="rec-badge" style="background:#E74C3C">ALTA</span>
+            <span class="rec-cat">🔴 Formato de Conteudo</span>
+          </div>
+          <p class="rec-situacao">Reels/Videos geram mais engajamento (108.30%).</p>
+          <ul class="rec-acoes"><li>Priorize a criacao de Reels/Videos.</li><li>Reels tem distribuicao organica maior pelo algoritmo.</li><li>Carrosseis aumentam o tempo de visualizacao, favorecidos pelo algoritmo.</li></ul>
+        </div>
+        <div class="rec-card">
+          <div class="rec-header" style="border-left:4px solid #F39C12">
+            <span class="rec-badge" style="background:#F39C12">MEDIA</span>
+            <span class="rec-cat">🟡 Horario de Publicacao</span>
+          </div>
+          <p class="rec-situacao">Melhor engajamento na Quarta as 0h UTC (21h horario de Brasilia).</p>
+          <ul class="rec-acoes"><li>Concentre publicacoes na Quarta entre 21h e 23h (Brasilia).</li><li>Use o agendamento do Creator Studio ou apps como Later/Buffer.</li><li>Poste nos Stories diariamente para manter presenca constante.</li></ul>
+        </div>
+        <div class="rec-card">
+          <div class="rec-header" style="border-left:4px solid #F39C12">
+            <span class="rec-badge" style="background:#F39C12">MEDIA</span>
+            <span class="rec-cat">🟡 Frequencia de Postagem</span>
+          </div>
+          <p class="rec-situacao">Frequencia atual de 1.8x/semana esta abaixo do recomendado.</p>
+          <ul class="rec-acoes"><li>Meta minima: 3-5 posts/semana no feed.</li><li>Stories: 5-10 por dia para manter engajamento diario.</li><li>Crie um calendario editorial com temas por dia da semana.</li><li>Reaproveite conteudo antigo de alto desempenho em novo formato.</li></ul>
+        </div>
+        <div class="rec-card">
+          <div class="rec-header" style="border-left:4px solid #F39C12">
+            <span class="rec-badge" style="background:#F39C12">MEDIA</span>
+            <span class="rec-cat">🟡 Comentarios</span>
+          </div>
+          <p class="rec-situacao">Ratio curtidas/comentarios de 84:1. Comentarios tem peso maior no algoritmo.</p>
+          <ul class="rec-acoes"><li>Termine legendas com uma pergunta especifica e facil de responder.</li><li>Use enquetes e caixas de perguntas nos Stories.</li><li>Responda comentarios com perguntas para gerar thread.</li></ul>
+        </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  Relatorio gerado automaticamente pelo Instagram Analyzer Pro &nbsp;·&nbsp; 06/04/2026
+</div>
+
+</body>
+</html>
